@@ -113,11 +113,11 @@ button:hover {
     font-size: 1.2rem;
     font-weight: bold;
     margin-bottom: 5px;
-    color: #333;
+    color: #000000;
 }
 
 .cocktail-category {
-    color: #666;
+    color: #9b8b00;
     margin-bottom: 10px;
 }
 
@@ -163,4 +163,15 @@ button:hover {
     .cocktails-grid {
         grid-template-columns: 1fr;
     }
+}
+
+.cocktail-card.empty {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.cocktail-image.placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: #ddd;
 }

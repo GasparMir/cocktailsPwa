@@ -1,35 +1,36 @@
-const CACHE_NAME = 'cocktail-app-shell-v1';
+const CACHE_NAME = 'cocteles-pwa-v1';
 const urlsToCache = [
-  './',            
-  './index.html',
-  './styles.css',
-  './app.js'
+    './',
+    './index.html',
+    './app.js',
+    './styles.css',
+    './manifest.json'
 ];
 
+// Instalar Service Worker
 self.addEventListener('install', event => {
-  console.log('Service Worker instalándose...');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cache abierto, agregando archivos...');
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => {
-        console.log('App shell guardado en cache');
-        return self.skipWaiting();
-      })
-      .catch(err => console.error('❌ Error al cachear archivos:', err))
-  );
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => {
+            console.log('Cache abierto');
+            return cache.addAll(urlsToCache);
+        })
+    );
 });
 
-self.addEventListener('activate', event => {
-  console.log('Service Worker activado');
-  return self.clients.claim();
-});
-
+// Interceptar peticiones y servir desde caché si es posible
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-  );
+    event.respondWith(
+        caches.match(event.request).then(response => {
+            return response || fetch(event.request).catch(() => caches.match('./index.html'));
+        })
+    );
+});
+
+// Limpiar cachés viejos al activar nuevo SW
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys().then(keys => Promise.all(
+            keys.map(key => key !== CACHE_NAME && caches.delete(key))
+        ))
+    );
 });
